@@ -1,0 +1,148 @@
+cmake_minimum_required(VERSION 2.8.3)
+project(pcalibra)
+
+## Compile as C++11, supported in ROS Kinetic and newer
+set(CMAKE_CXX_STANDARD 14)
+
+## Find catkin macros and libraries
+## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
+## is used, also find other catkin packages
+find_package(Boost REQUIRED COMPONENTS system)
+find_package(gflags REQUIRED)
+find_package(Ceres REQUIRED)
+find_package(OpenCV 3.4 REQUIRED)
+find_package(PCL REQUIRED)
+
+#set(USE_2DKdTree_L2 ON)
+#set(USE_ICP ON)
+#
+#OPTION(USE_2DKdTree_L2 "if set ON, in 2d situation, using L2 algorithm in kdtree distance. else it will use L1 algorithm")
+#OPTION(USE_ICP "if set ON, in registration algorithm will use ICP, or it will use NDT algorithm")
+
+#add_definitions(-DDEBUG)
+
+#if (USE_2DKdTree_L2)
+#    add_definitions(-DPLZ_USE_2DL2)
+#endif(USE_2DKdTree_L2)
+#
+#if (USE_ICP)
+#    add_definitions(-DPLZ_USE_ICP)
+#endif(USE_ICP)
+
+## System dependencies are found with CMake's conventions
+
+
+
+###########
+## Build ##
+###########
+
+## Specify additional locations of header files
+## Your package locations should be listed before other locations
+include_directories(
+        # include
+        include
+        ${PCL_INCLUDE_DIRS}
+        ${catkin_INCLUDE_DIRS}
+        ${gflags_INCLUDE_DIRS}
+        ${CERES_INCLUDE_DIRS}
+        ${OpenCV_INCLUDE_DIRS}
+)
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
+ message(STATUS =====${OpenCV_INCLUDE_DIRS})
+
+## Declare a C++ library
+# add_library(${PROJECT_NAME}
+#   src/${PROJECT_NAME}/pillar_localization.cpp
+# )
+
+## Add cmake target dependencies of the library
+## as an example, code may need to be generated before libraries
+## either from message generation or dynamic reconfigure
+# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+## Declare a C++ executable
+## With catkin_make all packages are built within a single CMake context
+## The recommended prefix ensures that target names across packages don't collide
+add_executable(${PROJECT_NAME}
+        examples/pcalibra.cpp
+        src/fit_line.cpp
+        src/utility.cpp
+        src/pcl-pcalibra.cpp
+        src/ground-extraction.cpp
+        src/optimization.cpp
+        src/correspondence.cpp
+        src/pillar-extraction.cpp
+        src/fit-plane.cpp
+        src/core.cpp
+        src/visualizer.cpp
+        )
+
+## Rename C++ executable without prefix
+## The above recommended prefix causes long target names, the following renames the
+## target back to the shorter version for ease of user use
+## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
+# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
+
+## Add cmake target dependencies of the executable
+## same as for the library above
+
+## Specify libraries to link a library or executable target against
+
+target_link_libraries(${PROJECT_NAME}
+        ${PCL_LIBRARIES}
+        ${CSPARSE_LIBRARY}
+        ${CERES_LIBRARIES}
+        ${OpenCV_LIBRARIES}
+        )
+
+#############
+## Install ##
+#############
+
+# all install targets should use catkin DESTINATION variables
+# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
+
+## Mark executable scripts (Python etc.) for installation
+## in contrast to setup.py, you can choose the destination
+# install(PROGRAMS
+#   scripts/my_python_script
+#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
+
+## Mark executables and/or libraries for installation
+# install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
+
+## Mark cpp header files for installation
+# install(DIRECTORY include/${PROJECT_NAME}/
+#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#   FILES_MATCHING PATTERN "*.h"
+#   PATTERN ".svn" EXCLUDE
+# )
+
+## Mark other files for installation (e.g. launch and bag files, etc.)
+# install(FILES
+#   # myfile1
+#   # myfile2
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# )
+
+#############
+## Testing ##
+#############
+
+## Add gtest based cpp test target and link libraries
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_pillar_localization.cpp)
+# if(TARGET ${PROJECT_NAME}-test)
+#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+# endif()
+
+## Add folders to be run by python nosetests
+# catkin_add_nosetests(test)
+
