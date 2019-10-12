@@ -26,8 +26,18 @@ struct CostFunctor{
 };
 
 /**
+ * @brief 开启优化但是初始值都是单位*/
+bool Optimization::Solve(){
+  Eigen::Vector3d transform;
+  transform.setZero();
+  Eigen::Quaterniond quaternion;
+  quaternion.setIdentity();
+  Solve(transform, quaternion);
+}
+
+/**
  * @brief Optimization's core function*/
-bool Optimization::Solve() {
+bool Optimization::Solve(Eigen::Vector3d transform, Eigen::Quaterniond quaternion) {
   //new ceres::AutoDiffCostFunction<CostFunctor, 1, 3, 4>(new CostFunctor(correspondence_[0]));
   ceres::Problem problem;
   ceres::LocalParameterization* quaternion_local_parameterization =
@@ -36,8 +46,10 @@ bool Optimization::Solve() {
   std::cout<<correspondence_.size()<<std::endl;
   CHECK_GT(correspondence_.size(), 0) << "there is no correspondence";
 
-  this->transform_.setZero();
-  this->quaternion_.setIdentity();
+  //this->transform_.setZero();
+  //this->quaternion_.setIdentity();
+  transform_ = transform;
+  quaternion_ = quaternion;
 
   for (const auto &it : correspondence_) {
     ceres::CostFunction* cost_function =
@@ -54,10 +66,12 @@ bool Optimization::Solve() {
 
   ceres::Solver::Options options;
   ceres::Solver::Summary summary;
-  options.max_num_iterations = 500;
-  options.linear_solver_type = ceres::DENSE_QR;
+  options.max_num_iterations = 300000;
+  options.linear_solver_type = ceres::DENSE_QR;//ceres::SPARSE_NORMAL_CHOLESKY;//ceres::DENSE_QR;
   options.function_tolerance = 1e-10;
   options.gradient_tolerance = 1e-14;
+  options.num_linear_solver_threads = 8;
+  options.num_threads = 8;
   ceres::Solve(options, &problem, &summary);
 
   std::cout << summary.FullReport() << '\n';

@@ -35,6 +35,7 @@ typedef cv::Point3d Point3;
 typedef cv::Point2d Point2;
 
 
+
 //#define EPoint EVector
 typedef Eigen::Matrix<double, 3, 1> EVector;
 typedef EVector EPoint;
@@ -51,15 +52,37 @@ class ELine{
  public:
   EPoint start;
   EPoint end;
-  EPoint vector;
+  EVector vector;
   void AdjustFromStartEnd(){
     //TODO
     exit(-1);
   }
   void AdjustFromStartVector();
 
+  ELine operator ^ (const int &x) {
+    if (x == -1) {
+      vector = - vector;
+      return *this;
+    }
+    if (x == 1) {
+      return *this;
+    }
+    assert(false);
+    exit(-1);
+  }
+
 };
 
+
+
+template <typename _Tp>
+static Eigen::Matrix<_Tp, 3, 3> MatrixHat(const Eigen::Matrix<_Tp, 3, 1> n);
+
+/**
+ * @brief 就是罗德里格斯公式，n是轴， theta为旋转角(rad), ret为返回值*/
+
+template <typename _Tp>
+static void Rodrigues(const Eigen::Matrix<_Tp, 3, 1> &n, const double theta, Eigen::Matrix<_Tp, 3, 3> *ret);
 
 
 /**
@@ -92,6 +115,10 @@ typedef class Line3 {
   /**
    * @brief 给出一个点和向量，归化坐标*/
   void AdjustFromVector();
+  Line3& operator = (const Line3 &arg) {
+    *this = arg;
+    return *this;
+  }
 
 } Line3;
 
@@ -268,6 +295,20 @@ void OutputPoints(const pcl::PointCloud<_Tp> &cloud, const std::string &path){
 
 }
 
+template <typename _Tp> inline
+static Eigen::Matrix<_Tp, 3, 3> MatrixHat(const Eigen::Matrix<_Tp, 3, 1> n){
+  Eigen::Matrix<_Tp, 3, 3> ret;
+  ret <<   0  << -n(3)  <<  n(2) <<
+         n(3) <<    0   << -n(1) <<
+        -n(2) <<  n(1)  <<    0;
+  return ret;
+}
+
+template <typename _Tp> inline
+static void Rodrigues(const Eigen::Matrix<_Tp, 3, 1> &n, const double theta, Eigen::Matrix<_Tp, 3, 3> *ret)
+{
+  *ret =  cos(theta) * Eigen::Matrix3d::Identity() + (1 - cos(theta) ) * n * n.transpose() + sin(theta) * MatrixHat(n);
+}
 
 
 } //namespace

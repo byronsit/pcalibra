@@ -8,7 +8,7 @@ void PointCloudLoader::LoadVelodyne(const std::string &path) {
   double x, y, z, intensity, line;
   pointcloud_.push_back(pcl::PointCloud<pcl::PointXYZI>());
   pcl::PointXYZI t;
-  while (~fscanf(fin, "%f %f %f %f %f", &t.x, &t.y, &t.z, &t.intensity, &line)){
+  while (~fscanf(fin, "%f %f %f %f %lf", &t.x, &t.y, &t.z, &t.intensity, &line)){
     pointcloud_.rbegin()->push_back(t);
   }
   fclose(fin);
@@ -17,15 +17,13 @@ void PointCloudLoader::LoadVelodyne(const std::string &path) {
 
 
 void PointCloudLoader::Load(const std::string &path) {
-  //TODO
-  exit(-1);
-  //FILE *fin = fopen(path.c_str(), "r");
-  //double x, y, z, intensity;
-  //pointcloud_.push_back(PointCloud3DI());
-  //while (~fscanf(fin, "%lf %lf %lf %lf", &x, &y, &z, &intensity)){
-  //  pointcloud_.rbegin()->points.push_back({x, y, z, intensity});
-  //}
-  //fclose(fin);
+  FILE *fin = fopen(path.c_str(), "r");
+  pointcloud_.push_back(pcl::PointCloud<pcl::PointXYZI>());
+  pcl::PointXYZI t;
+  while (~fscanf(fin, "%f %f %f %f", &t.x, &t.y, &t.z, &t.intensity)){
+    pointcloud_.rbegin()->push_back(t);
+  }
+  fclose(fin);
 }
 
 void Line3::AdjustFromStartEnd() {

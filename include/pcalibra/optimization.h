@@ -36,6 +36,8 @@ class Optimization {
    * @brief 函数主要入口，调用Solve即可
    * @param 没有
    * @return true 优化成功, false 优化失败 */
+  bool Solve(Eigen::Vector3d transform, Eigen::Quaterniond quaternion);
+
   bool Solve();
 
  private:

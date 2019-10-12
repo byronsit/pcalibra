@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(pcalibra)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(gflags REQUIRED)
 find_package(Ceres REQUIRED)
-find_package(OpenCV 3.4 REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED)
 
 #set(USE_2DKdTree_L2 ON)
@@ -19,7 +19,7 @@ find_package(PCL REQUIRED)
 #OPTION(USE_2DKdTree_L2 "if set ON, in 2d situation, using L2 algorithm in kdtree distance. else it will use L1 algorithm")
 #OPTION(USE_ICP "if set ON, in registration algorithm will use ICP, or it will use NDT algorithm")
 
-#add_definitions(-DDEBUG)
+add_definitions(-DVISUAL)
 
 #if (USE_2DKdTree_L2)
 #    add_definitions(-DPLZ_USE_2DL2)

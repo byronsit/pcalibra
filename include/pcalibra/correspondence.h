@@ -11,7 +11,7 @@
 
 namespace pcalibra {
 
-typedef enum CroresType {None, Point2Line, Point2Plane} CorresType;
+typedef enum CroresType {None, Point2Line, Point2Plane, Line2Line} CorresType;
 
 /**
  * @brief 对应关系,点和线的关系。点和面的关系两种
@@ -23,7 +23,7 @@ class Correspondence {
 
   Correspondence() = delete;
 
-  Correspondence(const Correspondence &cor):point_(cor.point_), line_(cor.line_), plane_(cor.plane_), corres_type(cor.corres_type){}
+  Correspondence(const Correspondence &cor):point_(cor.point_), line_(cor.line_), plane_(cor.plane_), corres_type(cor.corres_type), line2_(cor.line2_){}
 
   Correspondence(const EPoint &point, const ELine &line):point_(point),line_(line), corres_type(Point2Line){}
 
@@ -32,6 +32,10 @@ class Correspondence {
   Correspondence(const Point3 &point, const Line3 &line);
 
   Correspondence(const Point3 &point, const Plane &plane);
+
+  Correspondence(const ELine &line, const ELine &line2);//line是ref, line2是alg
+
+  Correspondence(const Line3 &line, const Line3 &line2);
 
   /**
    * @brief 直接函数，点线距或者点面距
@@ -46,6 +50,7 @@ class Correspondence {
  private:
   EPoint point_;
   ELine line_;
+  ELine line2_;
   EPlane plane_;
 };
 
@@ -67,7 +72,7 @@ T Correspondence::Function(Eigen::Map<const Eigen::Matrix<T, 3, 1> > &V, const E
     //std::cout<<"["<<r<<"]"<<std::endl;
     return r.norm();
   }
-  CHECK_EQ(corres_type, Point2Plane);
+  CHECK_NE(corres_type, Point2Line);
   if (corres_type == Point2Plane) { //点面距
     Eigen::Matrix<T, 3, 1> p, t ,r;
     p.setZero();
@@ -76,6 +81,16 @@ T Correspondence::Function(Eigen::Map<const Eigen::Matrix<T, 3, 1> > &V, const E
     r = point_ - p;
     return  r.dot(t);;
   }
+
+  //line2会移动
+  //线线距离，这里定义也就是line的方向的差值
+  if (corres_type == Line2Line) { // 线线距
+    Eigen::Matrix<T, 3, 1> p, t, r;
+    //(R * line2_.end + V) - (R * line2_.start + V);
+   return (line_.vector.cast<T>() - R*line2_.vector.cast<T>()).norm();
+  }
+
+
 }
 
 }//namespace

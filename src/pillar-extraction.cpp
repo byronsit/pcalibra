@@ -78,8 +78,9 @@ void PillarExtraction::foo(const pcl::pclpc3 &pointcloud){
   cluster.setClusterTolerance(ARG1);
   cluster.extract(indices);
   std::cout<<"the number of pillars is:" << indices.size() << std::endl;
-
+#ifdef VISUAL
   visualize(pointcloud);
+#endif
   for (const auto &it : indices) {
     pcl::pclpc3 pc;
     ELine line;
